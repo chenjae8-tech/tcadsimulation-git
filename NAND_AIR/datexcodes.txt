@@ -1,0 +1,36 @@
+DATEX2.1
+Datacode
+"$DateTime: 2024/09/11 07:15:25 $"
+"Data codes for semiconductor process and device simulation"
+
+
+Materials {
+    Nitride, Si3N4 {
+        label   = "Si3N4"
+        group   = Semiconductor
+        color   = #d0a005, #d9a815
+        alter1  = Nit
+        alter2  = 2
+    }
+
+    Oxide, SiO2 {
+        label   = "SiO2"
+        group   = Insulator
+        color   = #7d0505, #b38a11
+        alter1  = Ox
+        alter2  = 1
+    }
+    PolySi, PolySilicon {
+        label   = "PolySilicon"
+        group   = Semiconductor
+        color   = #c71585, #d915a8
+        alter1  = Poly
+        alter2  = 4
+    }
+
+    AirGap {
+        label   = "AirGap"
+        group   = Insulator
+        color   = #e6e6fa
+    }
+}

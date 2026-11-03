@@ -1,0 +1,17 @@
+# Claude Code 도구 부속물 - 연구 작업물이 아니고 언제든 다시 설치되므로 제외
+.agents/
+.claude/
+skills-lock.json
+
+# OS / 에디터 잡파일
+Thumbs.db
+desktop.ini
+.DS_Store
+*~
+*.swp
+
+# 시뮬레이터 임시/중간 산출물
+# (.plt, .tdr, .log 는 결과 데이터라 일부러 추적한다 - 재실행에 4시간 40분이 걸려서
+#  다시 만드는 것보다 보관하는 편이 낫다)
+nohup.out
+core.*
