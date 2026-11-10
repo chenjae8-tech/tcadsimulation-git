@@ -4,7 +4,8 @@
 - **사용된 커맨드 파일**: `NAND_AIR/NAND_AIR_pgm.cmd` (구조: `NAND_AIR/NAND_AIR.scm`)
 - **목적/의도**: 새로 만든 평면 NAND 구조(Air Gap 버전)에서 PGM이 실제로 동작하는지,
   단일 펄스(WL2 18V) 1회 + 전후 read로 짧게 확인. ISPP/Erase 없음.
-- **상태**: **성공** (NAND_AIR 완료 / NAND_BASE 재실행 중)
+- **상태**: **성공** (NAND_AIR 완료 / NAND_BASE 2026-11-03 17:08 KST 정상 종료 — `NAND_BASE_pgm_des.log` 확인함,
+  단 윈도우 로컬 `.plt`는 완료 전 중간 스냅샷이라 재복사 필요)
 
 ## 배경
 
@@ -137,7 +138,9 @@ Id-Vg (Drain TotalCurrent vs WL2), 초기 read(`s0vt`, 461행)와 비교:
 ## 결과 / 다음 액션
 
 - [x] NAND_AIR PGM 검증런 완료 — PGM 동작 확인
-- [ ] **NAND_BASE 재실행 중** (2026-11-03 `nohup`으로 재시작). 완료되면 동일 항목 추출
+- [x] NAND_BASE 재실행 완료 (2026-11-03 17:08 KST, `NAND_BASE_pgm_des.log`에서 정상 종료 확인:
+      wallclock 3h35m, 에러 없이 "Good Bye!"). **윈도우 로컬 `.plt` 3종은 완료 전 중간본이므로
+      scp로 재복사 필요** (s0vt/pulse/s1vt), 재복사되면 동일 항목(ΔVt, 크로스토크 등) 추출
 - [ ] `NAND_AIR_pgm_s0vt_*.plt`(초기 read) 확보 → ΔVt 계산
       (현재는 PGM 후 Vt만 있어 PGM으로 몇 V 이동했는지 모름)
 - [ ] BASE vs AIR 비교 — 이번 실험의 본 목적

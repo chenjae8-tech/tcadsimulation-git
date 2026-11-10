@@ -1,0 +1,1260 @@
+# =====================================================================
+# User P/E 1사이클 [v5] = A ISPP(15 -> 22 V, 15계단, wfbi_A-ispp_v8 그대로) + GIDL Erase 1회
+#   Erase: SL/BL 0 -> 18 V (상승 100 us / 유지 5 ms / 방전 50 us), 모든 WL 0 V,
+#          SG/DG = SL - 9 V 로 따라감(9 V 유지). Erase 뒤 rest 30 us -> Id-Vgs(0.004 V/us).
+#   Physics/Math 는 A v8 와 같다(PolySi SRH + Band2Band NonlocalPath, NL_Tox). Box 쪽 터널링 없음.
+#   [v5] v1 대비 변경: 소거 유지 2 -> 5 ms (User tBERS 5 ms) + 파라미터 v3(NL_Box 없음 -> 결과 v2 와 동일). NL_Box 있는 짝은 v6.
+#   Save/Load 없이 한 런 (Load 는 비평형 트랩 상태를 넘기지 못함 - PITFALLS 2026-10-04).
+#
+# [실행 전제] 실행 폴더에 sde_nand_5wl_alo_msh.tdr, datexcodes.txt. 서버에 20261017_models_v3.par.
+# [판정] Erase 후 Vt <= -4.5 V (실측 기준) 인지 + Sel 질화막 hTrappedCharge(정공 포획).
+#   runs/nand_user_pe_cycle/0001_ispp_gidl_erase_1cycle.md
+# =====================================================================
+
+File {
+    Grid = "sde_nand_5wl_alo_msh.tdr"
+    Parameter = "/home/daeyeol05/Original/20261017_models_v3.par"   # v3 = v2 + Al2O3(Insulator1) Bandgap
+    Plot    = "n@node@_PEv5_des.tdr"
+    Current = "n@node@_PEv5_des.plt"
+    Output  = "n@node@_PEv5_des.log"
+}
+
+Electrode {
+    { Name="SL" Voltage=0.0
+      Voltage=(
+            0.00 at 0.0000e-6,
+            0.00 at 71718.0000e-6,
+            18.00 at 71818.0000e-6,
+            18.00 at 76818.0000e-6,
+            0.00 at 76868.0000e-6,
+            0.00 at 81652.0000e-6
+      )
+    }
+
+    # BL: 프로그램 중 0V, Id-Vgs 구간에만 0.5V
+    { Name="BL" Voltage=0.0
+      Voltage=(
+            0.00 at 0.0000e-6,
+            0.00 at 6.0000e-6,
+            0.50 at 7.0000e-6,
+            0.50 at 31.5000e-6,
+            0.00 at 32.0000e-6,
+            0.00 at 54.0000e-6,
+            0.50 at 55.0000e-6,
+            0.50 at 4810.5000e-6,
+            0.00 at 4811.0000e-6,
+            0.00 at 4833.0000e-6,
+            0.50 at 4834.0000e-6,
+            0.50 at 9589.5000e-6,
+            0.00 at 9590.0000e-6,
+            0.00 at 9612.0000e-6,
+            0.50 at 9613.0000e-6,
+            0.50 at 14368.5000e-6,
+            0.00 at 14369.0000e-6,
+            0.00 at 14391.0000e-6,
+            0.50 at 14392.0000e-6,
+            0.50 at 19147.5000e-6,
+            0.00 at 19148.0000e-6,
+            0.00 at 19170.0000e-6,
+            0.50 at 19171.0000e-6,
+            0.50 at 23926.5000e-6,
+            0.00 at 23927.0000e-6,
+            0.00 at 23949.0000e-6,
+            0.50 at 23950.0000e-6,
+            0.50 at 28705.5000e-6,
+            0.00 at 28706.0000e-6,
+            0.00 at 28728.0000e-6,
+            0.50 at 28729.0000e-6,
+            0.50 at 33484.5000e-6,
+            0.00 at 33485.0000e-6,
+            0.00 at 33507.0000e-6,
+            0.50 at 33508.0000e-6,
+            0.50 at 38263.5000e-6,
+            0.00 at 38264.0000e-6,
+            0.00 at 38286.0000e-6,
+            0.50 at 38287.0000e-6,
+            0.50 at 43042.5000e-6,
+            0.00 at 43043.0000e-6,
+            0.00 at 43065.0000e-6,
+            0.50 at 43066.0000e-6,
+            0.50 at 47821.5000e-6,
+            0.00 at 47822.0000e-6,
+            0.00 at 47844.0000e-6,
+            0.50 at 47845.0000e-6,
+            0.50 at 52600.5000e-6,
+            0.00 at 52601.0000e-6,
+            0.00 at 52623.0000e-6,
+            0.50 at 52624.0000e-6,
+            0.50 at 57379.5000e-6,
+            0.00 at 57380.0000e-6,
+            0.00 at 57402.0000e-6,
+            0.50 at 57403.0000e-6,
+            0.50 at 62158.5000e-6,
+            0.00 at 62159.0000e-6,
+            0.00 at 62181.0000e-6,
+            0.50 at 62182.0000e-6,
+            0.50 at 66937.5000e-6,
+            0.00 at 66938.0000e-6,
+            0.00 at 66960.0000e-6,
+            0.50 at 66961.0000e-6,
+            0.50 at 71716.5000e-6,
+            0.00 at 71717.0000e-6,
+            0.00 at 71718.0000e-6,
+        #   GIDL Erase -> rest -> Id-Vgs
+            18.00 at 71818.0000e-6,
+            18.00 at 76818.0000e-6,
+            0.00 at 76868.0000e-6,
+            0.00 at 76894.0000e-6,
+            0.50 at 76895.0000e-6,
+            0.50 at 81650.5000e-6,
+            0.00 at 81651.0000e-6,
+            0.00 at 81652.0000e-6
+      )
+    }
+
+    # SG / DG : PGM 구간 1.9V (= CSL 기준값), read 구간만 6V.
+    #   시각은 WL_PASS 와 동일 — 같은 시점에 자기 레벨에 닿아 홀드하고 같이 0V.
+    { Name="SG" Voltage=0.0 WorkFunction=4.5
+      Voltage=(
+        # WL_PASS 와 같은 시각에 1.9V 에 닿아 홀드 -> WL_PASS·VPE 와 동시에 0V.
+        # PGM 중 SG/DG 에 6V 를 걸면 선택게이트 CTN 스택에 6V 가 그대로 걸린다.
+            0.00 at 0.0000e-6,
+            6.00 at 10.0000e-6,
+            6.00 at 32.0000e-6,
+            0.00 at 33.0000e-6,
+
+        # [S1]
+            1.90 at 34.0000e-6,
+            1.90 at 52.0000e-6,
+            0.00 at 53.0000e-6,
+            0.00 at 58.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 59.0000e-6,
+            6.00 at 4811.0000e-6,
+            0.00 at 4812.0000e-6,
+
+        # [S2]
+            1.90 at 4812.9677e-6,
+            1.90 at 4831.0323e-6,
+            0.00 at 4832.0000e-6,
+            0.00 at 4837.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 4838.0000e-6,
+            6.00 at 9590.0000e-6,
+            0.00 at 9591.0000e-6,
+
+        # [S3]
+            1.90 at 9591.9375e-6,
+            1.90 at 9610.0625e-6,
+            0.00 at 9611.0000e-6,
+            0.00 at 9616.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 9617.0000e-6,
+            6.00 at 14369.0000e-6,
+            0.00 at 14370.0000e-6,
+
+        # [S4]
+            1.90 at 14370.9091e-6,
+            1.90 at 14389.0909e-6,
+            0.00 at 14390.0000e-6,
+            0.00 at 14395.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 14396.0000e-6,
+            6.00 at 19148.0000e-6,
+            0.00 at 19149.0000e-6,
+
+        # [S5]
+            1.90 at 19149.8824e-6,
+            1.90 at 19168.1176e-6,
+            0.00 at 19169.0000e-6,
+            0.00 at 19174.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 19175.0000e-6,
+            6.00 at 23927.0000e-6,
+            0.00 at 23928.0000e-6,
+
+        # [S6]
+            1.90 at 23928.8571e-6,
+            1.90 at 23947.1429e-6,
+            0.00 at 23948.0000e-6,
+            0.00 at 23953.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 23954.0000e-6,
+            6.00 at 28706.0000e-6,
+            0.00 at 28707.0000e-6,
+
+        # [S7]
+            1.90 at 28707.8333e-6,
+            1.90 at 28726.1667e-6,
+            0.00 at 28727.0000e-6,
+            0.00 at 28732.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 28733.0000e-6,
+            6.00 at 33485.0000e-6,
+            0.00 at 33486.0000e-6,
+
+        # [S8]
+            1.90 at 33486.8108e-6,
+            1.90 at 33505.1892e-6,
+            0.00 at 33506.0000e-6,
+            0.00 at 33511.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 33512.0000e-6,
+            6.00 at 38264.0000e-6,
+            0.00 at 38265.0000e-6,
+
+        # [S9]
+            1.90 at 38265.7895e-6,
+            1.90 at 38284.2105e-6,
+            0.00 at 38285.0000e-6,
+            0.00 at 38290.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 38291.0000e-6,
+            6.00 at 43043.0000e-6,
+            0.00 at 43044.0000e-6,
+
+        # [S10]
+            1.90 at 43044.7692e-6,
+            1.90 at 43063.2308e-6,
+            0.00 at 43064.0000e-6,
+            0.00 at 43069.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 43070.0000e-6,
+            6.00 at 47822.0000e-6,
+            0.00 at 47823.0000e-6,
+
+        # [S11]
+            1.90 at 47823.7500e-6,
+            1.90 at 47842.2500e-6,
+            0.00 at 47843.0000e-6,
+            0.00 at 47848.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 47849.0000e-6,
+            6.00 at 52601.0000e-6,
+            0.00 at 52602.0000e-6,
+
+        # [S12]
+            1.90 at 52602.7317e-6,
+            1.90 at 52621.2683e-6,
+            0.00 at 52622.0000e-6,
+            0.00 at 52627.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 52628.0000e-6,
+            6.00 at 57380.0000e-6,
+            0.00 at 57381.0000e-6,
+
+        # [S13]
+            1.90 at 57381.7143e-6,
+            1.90 at 57400.2857e-6,
+            0.00 at 57401.0000e-6,
+            0.00 at 57406.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 57407.0000e-6,
+            6.00 at 62159.0000e-6,
+            0.00 at 62160.0000e-6,
+
+        # [S14]
+            1.90 at 62160.6977e-6,
+            1.90 at 62179.3023e-6,
+            0.00 at 62180.0000e-6,
+            0.00 at 62185.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 62186.0000e-6,
+            6.00 at 66938.0000e-6,
+            0.00 at 66939.0000e-6,
+
+        # [S15]
+            1.90 at 66939.6818e-6,
+            1.90 at 66958.3182e-6,
+            0.00 at 66959.0000e-6,
+            0.00 at 66964.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 66965.0000e-6,
+            6.00 at 71717.0000e-6,
+            0.00 at 71718.0000e-6,
+        #   GIDL Erase -> rest -> Id-Vgs
+            0.00 at 71768.0000e-6,
+            9.00 at 71818.0000e-6,
+            9.00 at 76818.0000e-6,
+            0.00 at 76843.0000e-6,
+            0.00 at 76898.0000e-6,
+            6.00 at 76899.0000e-6,
+            6.00 at 81651.0000e-6,
+            0.00 at 81652.0000e-6
+      )
+    }
+    { Name="DG" Voltage=0.0 WorkFunction=4.5
+      Voltage=(
+        # WL_PASS 와 같은 시각에 1.9V 에 닿아 홀드 -> WL_PASS·VPE 와 동시에 0V.
+        # PGM 중 SG/DG 에 6V 를 걸면 선택게이트 CTN 스택에 6V 가 그대로 걸린다.
+            0.00 at 0.0000e-6,
+            6.00 at 10.0000e-6,
+            6.00 at 32.0000e-6,
+            0.00 at 33.0000e-6,
+
+        # [S1]
+            1.90 at 34.0000e-6,
+            1.90 at 52.0000e-6,
+            0.00 at 53.0000e-6,
+            0.00 at 58.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 59.0000e-6,
+            6.00 at 4811.0000e-6,
+            0.00 at 4812.0000e-6,
+
+        # [S2]
+            1.90 at 4812.9677e-6,
+            1.90 at 4831.0323e-6,
+            0.00 at 4832.0000e-6,
+            0.00 at 4837.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 4838.0000e-6,
+            6.00 at 9590.0000e-6,
+            0.00 at 9591.0000e-6,
+
+        # [S3]
+            1.90 at 9591.9375e-6,
+            1.90 at 9610.0625e-6,
+            0.00 at 9611.0000e-6,
+            0.00 at 9616.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 9617.0000e-6,
+            6.00 at 14369.0000e-6,
+            0.00 at 14370.0000e-6,
+
+        # [S4]
+            1.90 at 14370.9091e-6,
+            1.90 at 14389.0909e-6,
+            0.00 at 14390.0000e-6,
+            0.00 at 14395.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 14396.0000e-6,
+            6.00 at 19148.0000e-6,
+            0.00 at 19149.0000e-6,
+
+        # [S5]
+            1.90 at 19149.8824e-6,
+            1.90 at 19168.1176e-6,
+            0.00 at 19169.0000e-6,
+            0.00 at 19174.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 19175.0000e-6,
+            6.00 at 23927.0000e-6,
+            0.00 at 23928.0000e-6,
+
+        # [S6]
+            1.90 at 23928.8571e-6,
+            1.90 at 23947.1429e-6,
+            0.00 at 23948.0000e-6,
+            0.00 at 23953.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 23954.0000e-6,
+            6.00 at 28706.0000e-6,
+            0.00 at 28707.0000e-6,
+
+        # [S7]
+            1.90 at 28707.8333e-6,
+            1.90 at 28726.1667e-6,
+            0.00 at 28727.0000e-6,
+            0.00 at 28732.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 28733.0000e-6,
+            6.00 at 33485.0000e-6,
+            0.00 at 33486.0000e-6,
+
+        # [S8]
+            1.90 at 33486.8108e-6,
+            1.90 at 33505.1892e-6,
+            0.00 at 33506.0000e-6,
+            0.00 at 33511.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 33512.0000e-6,
+            6.00 at 38264.0000e-6,
+            0.00 at 38265.0000e-6,
+
+        # [S9]
+            1.90 at 38265.7895e-6,
+            1.90 at 38284.2105e-6,
+            0.00 at 38285.0000e-6,
+            0.00 at 38290.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 38291.0000e-6,
+            6.00 at 43043.0000e-6,
+            0.00 at 43044.0000e-6,
+
+        # [S10]
+            1.90 at 43044.7692e-6,
+            1.90 at 43063.2308e-6,
+            0.00 at 43064.0000e-6,
+            0.00 at 43069.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 43070.0000e-6,
+            6.00 at 47822.0000e-6,
+            0.00 at 47823.0000e-6,
+
+        # [S11]
+            1.90 at 47823.7500e-6,
+            1.90 at 47842.2500e-6,
+            0.00 at 47843.0000e-6,
+            0.00 at 47848.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 47849.0000e-6,
+            6.00 at 52601.0000e-6,
+            0.00 at 52602.0000e-6,
+
+        # [S12]
+            1.90 at 52602.7317e-6,
+            1.90 at 52621.2683e-6,
+            0.00 at 52622.0000e-6,
+            0.00 at 52627.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 52628.0000e-6,
+            6.00 at 57380.0000e-6,
+            0.00 at 57381.0000e-6,
+
+        # [S13]
+            1.90 at 57381.7143e-6,
+            1.90 at 57400.2857e-6,
+            0.00 at 57401.0000e-6,
+            0.00 at 57406.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 57407.0000e-6,
+            6.00 at 62159.0000e-6,
+            0.00 at 62160.0000e-6,
+
+        # [S14]
+            1.90 at 62160.6977e-6,
+            1.90 at 62179.3023e-6,
+            0.00 at 62180.0000e-6,
+            0.00 at 62185.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 62186.0000e-6,
+            6.00 at 66938.0000e-6,
+            0.00 at 66939.0000e-6,
+
+        # [S15]
+            1.90 at 66939.6818e-6,
+            1.90 at 66958.3182e-6,
+            0.00 at 66959.0000e-6,
+            0.00 at 66964.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 66965.0000e-6,
+            6.00 at 71717.0000e-6,
+            0.00 at 71718.0000e-6,
+        #   GIDL Erase -> rest -> Id-Vgs
+            0.00 at 71768.0000e-6,
+            9.00 at 71818.0000e-6,
+            9.00 at 76818.0000e-6,
+            0.00 at 76843.0000e-6,
+            0.00 at 76898.0000e-6,
+            6.00 at 76899.0000e-6,
+            6.00 at 81651.0000e-6,
+            0.00 at 81652.0000e-6
+      )
+    }
+
+    # WL_PASS (VPASS)
+    { Name="WL_PASS" Voltage=0.0 WorkFunction=4.5
+      Voltage=(
+        # VPE 와 **같은 기울기**로 상승 -> VPASS 레벨에서 홀드 -> VPE 가 내려와
+        # 만나는 시점부터 같이 하강 -> VPE 와 동시에 0V 도달.
+            0.00 at 0.0000e-6,
+            6.00 at 10.0000e-6,
+            6.00 at 32.0000e-6,
+            0.00 at 33.0000e-6,
+
+        # [S1] slew 6.000 V/us (상승) / 6.000 V/us (하강)
+            6.00 at 34.0000e-6,
+            6.00 at 52.0000e-6,
+            0.00 at 53.0000e-6,
+            0.00 at 58.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 59.0000e-6,
+            6.00 at 4811.0000e-6,
+            0.00 at 4812.0000e-6,
+
+        # [S2] slew 6.200 V/us (상승) / 6.200 V/us (하강)
+            6.00 at 4812.9677e-6,
+            6.00 at 4831.0323e-6,
+            0.00 at 4832.0000e-6,
+            0.00 at 4837.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 4838.0000e-6,
+            6.00 at 9590.0000e-6,
+            0.00 at 9591.0000e-6,
+
+        # [S3] slew 6.400 V/us (상승) / 6.400 V/us (하강)
+            6.00 at 9591.9375e-6,
+            6.00 at 9610.0625e-6,
+            0.00 at 9611.0000e-6,
+            0.00 at 9616.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 9617.0000e-6,
+            6.00 at 14369.0000e-6,
+            0.00 at 14370.0000e-6,
+
+        # [S4] slew 6.600 V/us (상승) / 6.600 V/us (하강)
+            6.00 at 14370.9091e-6,
+            6.00 at 14389.0909e-6,
+            0.00 at 14390.0000e-6,
+            0.00 at 14395.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 14396.0000e-6,
+            6.00 at 19148.0000e-6,
+            0.00 at 19149.0000e-6,
+
+        # [S5] slew 6.800 V/us (상승) / 6.800 V/us (하강)
+            6.00 at 19149.8824e-6,
+            6.00 at 19168.1176e-6,
+            0.00 at 19169.0000e-6,
+            0.00 at 19174.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 19175.0000e-6,
+            6.00 at 23927.0000e-6,
+            0.00 at 23928.0000e-6,
+
+        # [S6] slew 7.000 V/us (상승) / 7.000 V/us (하강)
+            6.00 at 23928.8571e-6,
+            6.00 at 23947.1429e-6,
+            0.00 at 23948.0000e-6,
+            0.00 at 23953.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 23954.0000e-6,
+            6.00 at 28706.0000e-6,
+            0.00 at 28707.0000e-6,
+
+        # [S7] slew 7.200 V/us (상승) / 7.200 V/us (하강)
+            6.00 at 28707.8333e-6,
+            6.00 at 28726.1667e-6,
+            0.00 at 28727.0000e-6,
+            0.00 at 28732.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 28733.0000e-6,
+            6.00 at 33485.0000e-6,
+            0.00 at 33486.0000e-6,
+
+        # [S8] slew 7.400 V/us (상승) / 7.400 V/us (하강)
+            6.00 at 33486.8108e-6,
+            6.00 at 33505.1892e-6,
+            0.00 at 33506.0000e-6,
+            0.00 at 33511.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 33512.0000e-6,
+            6.00 at 38264.0000e-6,
+            0.00 at 38265.0000e-6,
+
+        # [S9] slew 7.600 V/us (상승) / 7.600 V/us (하강)
+            6.00 at 38265.7895e-6,
+            6.00 at 38284.2105e-6,
+            0.00 at 38285.0000e-6,
+            0.00 at 38290.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 38291.0000e-6,
+            6.00 at 43043.0000e-6,
+            0.00 at 43044.0000e-6,
+
+        # [S10] slew 7.800 V/us (상승) / 7.800 V/us (하강)
+            6.00 at 43044.7692e-6,
+            6.00 at 43063.2308e-6,
+            0.00 at 43064.0000e-6,
+            0.00 at 43069.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 43070.0000e-6,
+            6.00 at 47822.0000e-6,
+            0.00 at 47823.0000e-6,
+
+        # [S11] slew 8.000 V/us (상승) / 8.000 V/us (하강)
+            6.00 at 47823.7500e-6,
+            6.00 at 47842.2500e-6,
+            0.00 at 47843.0000e-6,
+            0.00 at 47848.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 47849.0000e-6,
+            6.00 at 52601.0000e-6,
+            0.00 at 52602.0000e-6,
+
+        # [S12] slew 8.200 V/us (상승) / 8.200 V/us (하강)
+            6.00 at 52602.7317e-6,
+            6.00 at 52621.2683e-6,
+            0.00 at 52622.0000e-6,
+            0.00 at 52627.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 52628.0000e-6,
+            6.00 at 57380.0000e-6,
+            0.00 at 57381.0000e-6,
+
+        # [S13] slew 8.400 V/us (상승) / 8.400 V/us (하강)
+            6.00 at 57381.7143e-6,
+            6.00 at 57400.2857e-6,
+            0.00 at 57401.0000e-6,
+            0.00 at 57406.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 57407.0000e-6,
+            6.00 at 62159.0000e-6,
+            0.00 at 62160.0000e-6,
+
+        # [S14] slew 8.600 V/us (상승) / 8.600 V/us (하강)
+            6.00 at 62160.6977e-6,
+            6.00 at 62179.3023e-6,
+            0.00 at 62180.0000e-6,
+            0.00 at 62185.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 62186.0000e-6,
+            6.00 at 66938.0000e-6,
+            0.00 at 66939.0000e-6,
+
+        # [S15] slew 8.800 V/us (상승) / 8.800 V/us (하강)
+            6.00 at 66939.6818e-6,
+            6.00 at 66958.3182e-6,
+            0.00 at 66959.0000e-6,
+            0.00 at 66964.0000e-6,
+        #   Id-Vgs 구간: read-pass 로 다시 인가
+            6.00 at 66965.0000e-6,
+            6.00 at 71717.0000e-6,
+            0.00 at 71718.0000e-6,
+        #   GIDL Erase -> rest -> Id-Vgs
+            0.00 at 76898.0000e-6,
+            6.00 at 76899.0000e-6,
+            6.00 at 81651.0000e-6,
+            0.00 at 81652.0000e-6
+      )
+    }
+
+    # [측정 대상] WL_SEL (VPE)
+    { Name="WL_SEL" Voltage=0.0 WorkFunction=4.5
+      Voltage=(
+        # periphery 올라오는 동안 0V
+            0.00 at 0.0000e-6,
+            0.00 at 10.0000e-6,
+
+        # [Vt0] 초기 Id-Vgs (-4.0V 기대)
+           -7.00 at 12.0000e-6,
+           12.00 at 31.0000e-6,
+            0.00 at 33.0000e-6,
+
+        # [S1] VPE = 15.0 V
+           15.00 at 35.5000e-6,
+           15.00 at 50.5000e-6,
+            0.00 at 53.0000e-6,
+            0.00 at 58.0000e-6,
+        #   Id-Vgs #1
+           -7.00 at 60.0000e-6,
+           12.00 at 4810.0000e-6,
+            0.00 at 4812.0000e-6,
+
+        # [S2] VPE = 15.5 V
+           15.50 at 4814.5000e-6,
+           15.50 at 4829.5000e-6,
+            0.00 at 4832.0000e-6,
+            0.00 at 4837.0000e-6,
+        #   Id-Vgs #2
+           -7.00 at 4839.0000e-6,
+           12.00 at 9589.0000e-6,
+            0.00 at 9591.0000e-6,
+
+        # [S3] VPE = 16.0 V
+           16.00 at 9593.5000e-6,
+           16.00 at 9608.5000e-6,
+            0.00 at 9611.0000e-6,
+            0.00 at 9616.0000e-6,
+        #   Id-Vgs #3
+           -7.00 at 9618.0000e-6,
+           12.00 at 14368.0000e-6,
+            0.00 at 14370.0000e-6,
+
+        # [S4] VPE = 16.5 V
+           16.50 at 14372.5000e-6,
+           16.50 at 14387.5000e-6,
+            0.00 at 14390.0000e-6,
+            0.00 at 14395.0000e-6,
+        #   Id-Vgs #4
+           -7.00 at 14397.0000e-6,
+           12.00 at 19147.0000e-6,
+            0.00 at 19149.0000e-6,
+
+        # [S5] VPE = 17.0 V
+           17.00 at 19151.5000e-6,
+           17.00 at 19166.5000e-6,
+            0.00 at 19169.0000e-6,
+            0.00 at 19174.0000e-6,
+        #   Id-Vgs #5
+           -7.00 at 19176.0000e-6,
+           12.00 at 23926.0000e-6,
+            0.00 at 23928.0000e-6,
+
+        # [S6] VPE = 17.5 V
+           17.50 at 23930.5000e-6,
+           17.50 at 23945.5000e-6,
+            0.00 at 23948.0000e-6,
+            0.00 at 23953.0000e-6,
+        #   Id-Vgs #6
+           -7.00 at 23955.0000e-6,
+           12.00 at 28705.0000e-6,
+            0.00 at 28707.0000e-6,
+
+        # [S7] VPE = 18.0 V
+           18.00 at 28709.5000e-6,
+           18.00 at 28724.5000e-6,
+            0.00 at 28727.0000e-6,
+            0.00 at 28732.0000e-6,
+        #   Id-Vgs #7
+           -7.00 at 28734.0000e-6,
+           12.00 at 33484.0000e-6,
+            0.00 at 33486.0000e-6,
+
+        # [S8] VPE = 18.5 V
+           18.50 at 33488.5000e-6,
+           18.50 at 33503.5000e-6,
+            0.00 at 33506.0000e-6,
+            0.00 at 33511.0000e-6,
+        #   Id-Vgs #8
+           -7.00 at 33513.0000e-6,
+           12.00 at 38263.0000e-6,
+            0.00 at 38265.0000e-6,
+
+        # [S9] VPE = 19.0 V
+           19.00 at 38267.5000e-6,
+           19.00 at 38282.5000e-6,
+            0.00 at 38285.0000e-6,
+            0.00 at 38290.0000e-6,
+        #   Id-Vgs #9
+           -7.00 at 38292.0000e-6,
+           12.00 at 43042.0000e-6,
+            0.00 at 43044.0000e-6,
+
+        # [S10] VPE = 19.5 V
+           19.50 at 43046.5000e-6,
+           19.50 at 43061.5000e-6,
+            0.00 at 43064.0000e-6,
+            0.00 at 43069.0000e-6,
+        #   Id-Vgs #10
+           -7.00 at 43071.0000e-6,
+           12.00 at 47821.0000e-6,
+            0.00 at 47823.0000e-6,
+
+        # [S11] VPE = 20.0 V
+           20.00 at 47825.5000e-6,
+           20.00 at 47840.5000e-6,
+            0.00 at 47843.0000e-6,
+            0.00 at 47848.0000e-6,
+        #   Id-Vgs #11
+           -7.00 at 47850.0000e-6,
+           12.00 at 52600.0000e-6,
+            0.00 at 52602.0000e-6,
+
+        # [S12] VPE = 20.5 V
+           20.50 at 52604.5000e-6,
+           20.50 at 52619.5000e-6,
+            0.00 at 52622.0000e-6,
+            0.00 at 52627.0000e-6,
+        #   Id-Vgs #12
+           -7.00 at 52629.0000e-6,
+           12.00 at 57379.0000e-6,
+            0.00 at 57381.0000e-6,
+
+        # [S13] VPE = 21.0 V
+           21.00 at 57383.5000e-6,
+           21.00 at 57398.5000e-6,
+            0.00 at 57401.0000e-6,
+            0.00 at 57406.0000e-6,
+        #   Id-Vgs #13
+           -7.00 at 57408.0000e-6,
+           12.00 at 62158.0000e-6,
+            0.00 at 62160.0000e-6,
+
+        # [S14] VPE = 21.5 V
+           21.50 at 62162.5000e-6,
+           21.50 at 62177.5000e-6,
+            0.00 at 62180.0000e-6,
+            0.00 at 62185.0000e-6,
+        #   Id-Vgs #14
+           -7.00 at 62187.0000e-6,
+           12.00 at 66937.0000e-6,
+            0.00 at 66939.0000e-6,
+
+        # [S15] VPE = 22.0 V
+           22.00 at 66941.5000e-6,
+           22.00 at 66956.5000e-6,
+            0.00 at 66959.0000e-6,
+            0.00 at 66964.0000e-6,
+        #   Id-Vgs #15
+           -7.00 at 66966.0000e-6,
+           12.00 at 71716.0000e-6,
+            0.00 at 71718.0000e-6,
+        #   GIDL Erase -> rest -> Id-Vgs
+            0.00 at 76898.0000e-6,
+            -7.00 at 76900.0000e-6,
+            12.00 at 81650.0000e-6,
+            0.00 at 81652.0000e-6
+      )
+    }
+}
+
+# ---- Physics / Plot / CurrentPlot / Math 는 조건 B/C와 100% 동일 ----
+Physics {
+    eBarrierTunneling "NL_Tox"
+    hBarrierTunneling "NL_Tox"
+}
+
+Physics(Material="PolySi") {
+    Recombination(
+      SRH
+      Band2Band(Model=NonlocalPath)
+    )
+    Mobility(DopingDependence)
+}
+
+Physics(Material="Si3N4") {
+    Mobility(ConstantMobility)
+
+    # 총 밀도 = Conc * EnergySig * sqrt(2pi):
+    #   Tdon 6.267e19 cm^-3  /  Tacc 1.003e20 cm^-3  <- 점유율 분모
+    Traps(
+        ( Name="Tdon" Donor Gaussian EnergyMid= 2.50 EnergySig= 0.50 fromCondBand
+          Conc= 5.0e19
+          eXSection= 1e-15 hXSection= 1e-15
+          eBarrierTunneling(NonLocal= "NL_Tox" )
+          hBarrierTunneling(NonLocal= "NL_Tox" )
+          PooleFrenkel(Electron)
+          TrapVolume= 1e-15
+       )
+
+        ( Name="Tacc" Acceptor Gaussian EnergyMid= 1.00 EnergySig= 0.50 fromCondBand
+          Conc= 8.0e19
+          eXsection= 1e-15 hXsection= 1e-15
+          eBarrierTunneling(NonLocal= "NL_Tox" )
+          hBarrierTunneling(NonLocal= "NL_Tox" )
+          PooleFrenkel(Electron)
+          TrapVolume= 1e-15
+        )
+    )
+}
+
+Plot {
+    eDensity hDensity
+    Potential
+    ElectricField/Vector
+    ConductionBandEnergy ValenceBandEnergy BandGap
+    Doping
+    eTrappedCharge hTrappedCharge
+    eBarrierTunneling hBarrierTunneling
+    SpaceCharge
+    Band2BandGeneration
+}
+
+CurrentPlot {
+    # ---- [지표 1] 트랩 점유 (분모: Acceptor 1.003e20 / Donor 6.267e19)
+    #      hTrappedCharge를 같이 찍는 이유: 초기 Tdon 설정이 의도대로 걸렸는지
+    #      물리량으로 교차 확인하기 위함 (PITFALLS 2026-09-13)
+    eTrappedCharge( Average(   Material="Si3N4" Window[(0.038 0.110) (0.043 0.135)] Name="Sel" ) )
+    hTrappedCharge( Average(   Material="Si3N4" Window[(0.038 0.110) (0.043 0.135)] Name="Sel" ) )
+    eTrappedCharge( Integrate( Material="Si3N4" Window[(0.038 0.110) (0.043 0.135)] Coordinates Name="Sel" ) )
+    eTrappedCharge( Average( Material="Si3N4" Window[(0.038 0.110) (0.0405 0.135)] Name="SelToxHalf" ) )
+    eTrappedCharge( Average( Material="Si3N4" Window[(0.0405 0.110) (0.043 0.135)] Name="SelBoxHalf" ) )
+
+    # ---- [지표 2] 전류 스트레스. 부호가 바뀌므로 주입/역류를 분리해서 적분할 것
+    eBarrierTunneling( Integral( RegionInterface="R.Channel_Sel/R.TunnelOx_Sel" ) )
+    hBarrierTunneling( Integral( RegionInterface="R.Channel_Sel/R.TunnelOx_Sel" ) )
+
+    # ---- [지표 3] Tox / Box 전계. Region= 사용 (Material=+Window는 -1e300, PITFALLS 2026-09-08)
+    #      X_/Y_ 좌표를 반드시 같이 확인할 것 (모서리 특이점, PITFALLS 2026-09-08)
+    Tcl (
+        Formula   = "set value 0
+                     for {set d 0} {$d < $tcl_cp_dim} {incr d} {
+                       set f [tcl_cp_ReadVector ElectricField $d]
+                       set value [expr $value + $f*$f]
+                     }
+                     set value [expr sqrt($value)]"
+        Operation = "Maximum Region=\"R.TunnelOx_Sel\""
+        Dataset   = "AbsE_Max_TunnelOx_Sel"
+        Function  = "AbsElectricField"
+    )
+    Tcl (
+        Formula   = "set value 0
+                     for {set d 0} {$d < $tcl_cp_dim} {incr d} {
+                       set f [tcl_cp_ReadVector ElectricField $d]
+                       set value [expr $value + $f*$f]
+                     }
+                     set value [expr sqrt($value)]"
+        Operation = "Maximum Region=\"R.BlockOx\" Window = [(0.043 0.110) (0.050 0.135)]"
+        Dataset   = "AbsE_Max_BlockOx_Sel"
+        Function  = "AbsElectricField"
+    )
+
+    # ---- 층별 전위 (평균 전계 계산용 / 모서리 영향 없는 예비 경로)
+    Potential( Average( Region="R.WL_Sel" Name="SelGate" ) )
+    Potential( Average( Material="Si3N4" Window[(0.0415 0.110) (0.043 0.135)] Name="SelNitBoxEdge" ) )
+    Potential( Average( Region="R.AlO_Sel" Window[(0.050 0.110) (0.0515 0.135)] Name="SelAloInner" ) )
+    Potential( Average( Material="PolySi" Window[(0.025 0.110) (0.033 0.135)] Name="SelChannel" ) )
+
+    # ---- Pass 크로스토크 감시
+    eTrappedCharge( Average( Material="Si3N4" Window[(0.038 0.065) (0.043 0.090)] Name="Pass1" ) )
+    eTrappedCharge( Average( Material="Si3N4" Window[(0.038 0.155) (0.043 0.180)] Name="Pass2" ) )
+
+    # ---- Erase 진단: 정공 공급(GIDL) / Sel 채널 정공 / Sel 질화막 정공
+    Band2BandGeneration( Integral( Material="PolySi" Window[(0.025 0.000) (0.033 0.045)] Name="GIDL_SL" ) )
+    Band2BandGeneration( Integral( Material="PolySi" Window[(0.025 0.200) (0.033 0.245)] Name="GIDL_BL" ) )
+    hDensity( Average( Material="PolySi" Window[(0.025 0.110) (0.033 0.135)] Name="SelChHole" ) )
+    hTrappedCharge( Average( Material="Si3N4" Window[(0.038 0.110) (0.0405 0.135)] Name="SelToxHalf" ) )
+    hTrappedCharge( Average( Material="Si3N4" Window[(0.0405 0.110) (0.043 0.135)] Name="SelBoxHalf" ) )
+}
+
+Math {
+    Cylindrical( xAxis=0.0 )
+
+    Method=Pardiso
+    -CheckUndefinedModels
+    Derivatives
+    RelErrControl
+
+    TrapDLN(PeakSampling)=13
+
+    NonLocal "NL_Tox" (
+        RegionInterface="R.Channel_Below/R.TunnelOx_Below"
+        RegionInterface="R.Channel_Sel/R.TunnelOx_Sel"
+        RegionInterface="R.Channel_Above/R.TunnelOx_Above"
+        Length= 1e-6
+        Digits= 4
+        EnergyResolution= 1e-4
+    )
+
+    Digits=3
+    Iterations=150
+    Notdamped=8
+    Number_of_Threads= 4
+    Transient=BE
+}
+
+Solve {
+    Set( Traps( "Tdon" = 0.139  "Tacc" = 0.0  Frozen ) )
+
+    Coupled (Iterations=100) { Poisson }
+    Coupled (Iterations=100) { Poisson Electron }
+    Coupled (Iterations=100 Digits=8) { Poisson Electron Hole }
+    Plot ( FilePrefix="n@node@_PEv5_00_EraseState" )
+
+    Set( Traps( -Frozen ) )
+
+    NewCurrentPrefix = "n@node@_PEv5_pon_"
+    Transient ( InitialTime=0.0 FinalTime=10.0000e-6
+        InitialStep=1e-12 MaxStep=1e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (0 10.0000e-6) intervals = 100))
+        Plot ( FilePrefix="n@node@_PEv5_01_PeripheryOn" Time=( 10.0000e-6 ) )
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s00vt_"
+    Transient ( InitialTime=10.0000e-6 FinalTime=33.0000e-6
+        InitialStep=1e-9 MaxStep=5e-8 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (10.0000e-6 33.0000e-6) intervals = 460))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S01] VPE = 15.0 V
+    NewCurrentPrefix = "n@node@_PEv5_s01_"
+    Transient ( InitialTime=33.0000e-6 FinalTime=58.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (33.0000e-6 58.0000e-6) intervals = 250))
+        Plot ( FilePrefix="n@node@_PEv5_s01_HoldEnd" Time=( 50.5000e-6 ) )
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s01vt_"
+    Transient ( InitialTime=58.0000e-6 FinalTime=4812.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (58.0000e-6 4812.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S02] VPE = 15.5 V
+    NewCurrentPrefix = "n@node@_PEv5_s02_"
+    Transient ( InitialTime=4812.0000e-6 FinalTime=4837.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (4812.0000e-6 4837.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s02vt_"
+    Transient ( InitialTime=4837.0000e-6 FinalTime=9591.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (4837.0000e-6 9591.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S03] VPE = 16.0 V
+    NewCurrentPrefix = "n@node@_PEv5_s03_"
+    Transient ( InitialTime=9591.0000e-6 FinalTime=9616.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (9591.0000e-6 9616.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s03vt_"
+    Transient ( InitialTime=9616.0000e-6 FinalTime=14370.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (9616.0000e-6 14370.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S04] VPE = 16.5 V
+    NewCurrentPrefix = "n@node@_PEv5_s04_"
+    Transient ( InitialTime=14370.0000e-6 FinalTime=14395.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (14370.0000e-6 14395.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s04vt_"
+    Transient ( InitialTime=14395.0000e-6 FinalTime=19149.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (14395.0000e-6 19149.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S05] VPE = 17.0 V
+    NewCurrentPrefix = "n@node@_PEv5_s05_"
+    Transient ( InitialTime=19149.0000e-6 FinalTime=19174.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (19149.0000e-6 19174.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s05vt_"
+    Transient ( InitialTime=19174.0000e-6 FinalTime=23928.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (19174.0000e-6 23928.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S06] VPE = 17.5 V
+    NewCurrentPrefix = "n@node@_PEv5_s06_"
+    Transient ( InitialTime=23928.0000e-6 FinalTime=23953.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (23928.0000e-6 23953.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s06vt_"
+    Transient ( InitialTime=23953.0000e-6 FinalTime=28707.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (23953.0000e-6 28707.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S07] VPE = 18.0 V
+    NewCurrentPrefix = "n@node@_PEv5_s07_"
+    Transient ( InitialTime=28707.0000e-6 FinalTime=28732.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (28707.0000e-6 28732.0000e-6) intervals = 250))
+        Plot ( FilePrefix="n@node@_PEv5_s07_HoldEnd" Time=( 28724.5000e-6 ) )
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s07vt_"
+    Transient ( InitialTime=28732.0000e-6 FinalTime=33486.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (28732.0000e-6 33486.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S08] VPE = 18.5 V
+    NewCurrentPrefix = "n@node@_PEv5_s08_"
+    Transient ( InitialTime=33486.0000e-6 FinalTime=33511.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (33486.0000e-6 33511.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s08vt_"
+    Transient ( InitialTime=33511.0000e-6 FinalTime=38265.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (33511.0000e-6 38265.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S09] VPE = 19.0 V
+    NewCurrentPrefix = "n@node@_PEv5_s09_"
+    Transient ( InitialTime=38265.0000e-6 FinalTime=38290.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (38265.0000e-6 38290.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s09vt_"
+    Transient ( InitialTime=38290.0000e-6 FinalTime=43044.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (38290.0000e-6 43044.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S10] VPE = 19.5 V
+    NewCurrentPrefix = "n@node@_PEv5_s10_"
+    Transient ( InitialTime=43044.0000e-6 FinalTime=43069.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (43044.0000e-6 43069.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s10vt_"
+    Transient ( InitialTime=43069.0000e-6 FinalTime=47823.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (43069.0000e-6 47823.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S11] VPE = 20.0 V
+    NewCurrentPrefix = "n@node@_PEv5_s11_"
+    Transient ( InitialTime=47823.0000e-6 FinalTime=47848.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (47823.0000e-6 47848.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s11vt_"
+    Transient ( InitialTime=47848.0000e-6 FinalTime=52602.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (47848.0000e-6 52602.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S12] VPE = 20.5 V
+    NewCurrentPrefix = "n@node@_PEv5_s12_"
+    Transient ( InitialTime=52602.0000e-6 FinalTime=52627.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (52602.0000e-6 52627.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s12vt_"
+    Transient ( InitialTime=52627.0000e-6 FinalTime=57381.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (52627.0000e-6 57381.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S13] VPE = 21.0 V
+    NewCurrentPrefix = "n@node@_PEv5_s13_"
+    Transient ( InitialTime=57381.0000e-6 FinalTime=57406.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (57381.0000e-6 57406.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s13vt_"
+    Transient ( InitialTime=57406.0000e-6 FinalTime=62160.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (57406.0000e-6 62160.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S14] VPE = 21.5 V
+    NewCurrentPrefix = "n@node@_PEv5_s14_"
+    Transient ( InitialTime=62160.0000e-6 FinalTime=62185.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (62160.0000e-6 62185.0000e-6) intervals = 250))
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s14vt_"
+    Transient ( InitialTime=62185.0000e-6 FinalTime=66939.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (62185.0000e-6 66939.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [S15] VPE = 22.0 V
+    NewCurrentPrefix = "n@node@_PEv5_s15_"
+    Transient ( InitialTime=66939.0000e-6 FinalTime=66964.0000e-6
+        InitialStep=1e-9 MaxStep=2e-7 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (66939.0000e-6 66964.0000e-6) intervals = 250))
+        Plot ( FilePrefix="n@node@_PEv5_s15_HoldEnd" Time=( 66956.5000e-6 ) )
+    }
+
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_s15vt_"
+    Transient ( InitialTime=66964.0000e-6 FinalTime=71718.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (66964.0000e-6 71718.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    # [GIDL Erase] 상승 100 us
+    NewCurrentPrefix = "n@node@_PEv5_er_rise_"
+    Transient ( InitialTime=71718.0000e-6 FinalTime=71818.0000e-6
+        InitialStep=1e-12 MaxStep=1e-6 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (71718.0000e-6 71818.0000e-6) intervals = 100))
+        Plot ( FilePrefix="n@node@_PEv5_er_18V" Time=( 71818.0000e-6 ) )
+    }
+
+    # 유지 5 ms
+    NewCurrentPrefix = "n@node@_PEv5_er_hold_"
+    Transient ( InitialTime=71818.0000e-6 FinalTime=76818.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (71818.0000e-6 76818.0000e-6) intervals = 500))
+        Plot ( FilePrefix="n@node@_PEv5_er_hold1ms" Time=( 72818.0000e-6 ) )
+        Plot ( FilePrefix="n@node@_PEv5_er_holdEnd" Time=( 76818.0000e-6 ) )
+    }
+
+    # 방전 50 us
+    NewCurrentPrefix = "n@node@_PEv5_er_fall_"
+    Transient ( InitialTime=76818.0000e-6 FinalTime=76868.0000e-6
+        InitialStep=1e-9 MaxStep=1e-6 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (76818.0000e-6 76868.0000e-6) intervals = 50))
+    }
+
+    # rest 30 us (전극 0 V, BL 만 read 직전 0.5 V)
+    NewCurrentPrefix = "n@node@_PEv5_er_rest_"
+    Transient ( InitialTime=76868.0000e-6 FinalTime=76898.0000e-6
+        InitialStep=1e-9 MaxStep=1e-6 MinStep=1e-15 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (76868.0000e-6 76898.0000e-6) intervals = 30))
+        Plot ( FilePrefix="n@node@_PEv5_er_restEnd" Time=( 76898.0000e-6 ) )
+    }
+
+    # Erase 후 Id-Vgs (0.004 V/us)
+    Set( Traps( Frozen ) )
+    NewCurrentPrefix = "n@node@_PEv5_ervt_"
+    Transient ( InitialTime=76898.0000e-6 FinalTime=81652.0000e-6
+        InitialStep=1e-9 MaxStep=1e-5 MinStep=1e-12 ) {
+        Coupled { Poisson Electron Hole }
+        CurrentPlot (time = (range = (76898.0000e-6 81652.0000e-6) intervals = 477))
+    }
+    Set( Traps( -Frozen ) )
+
+    Plot ( FilePrefix="n@node@_PEv5_99_Final" )
+}

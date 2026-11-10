@@ -1,0 +1,170 @@
+=====================================================================
+ 3D NAND 5게이트 축소 스트링 — PGM / Erase / Read 기준 커맨드 수정용 프롬프트
+=====================================================================
+
+[사용법]
+  1) 이 파일 전체를 AI 어시스턴트(Claude 등)에 붙여넣고, 아래 4개 파일을 같이 첨부합니다.
+       - pecycle_A-ispp-gidl-erase_v5_20261018.txt   (SDEVICE 기준 커맨드)
+       - 20260910_nand5gate_alo_sde_v3.scm             (SDE 구조 스크립트)
+       - 20261017_models_v3.par                        (재질 파라미터)
+       - datexcodes.txt                                (재질 분류)
+  2) 바로 아래 "[A] 내가 정할 것" 칸만 채워서 보냅니다.
+  3) 어시스턴트는 "[B] 어시스턴트가 지킬 규칙"에 따라 커맨드를 만들어 줍니다.
+  * 같은 내용이 전달받은 웹 페이지("NAND PGM·Erase 기준 커맨드")에도 들어 있습니다. 그 페이지를
+    Claude 에게 읽히면 [A] 항목을 하나씩 물어보며 준비를 도와줍니다.
+
+---------------------------------------------------------------------
+[A] 내가 정할 것  (빈칸을 채우거나 하나를 고르세요)
+---------------------------------------------------------------------
+
+A-1. 서버 경로
+  - 파라미터 파일(.par)의 서버 절대경로: ______________________________
+        예) /home/<내 계정>/params/20261017_models_v3.par
+  - 시뮬레이션 실행 폴더(SWB 프로젝트 폴더): ______________________________
+  - 메쉬 파일 sde_nand_5wl_alo_msh.tdr 위치: ( ) 실행 폴더 안   ( ) 다른 곳: ______________________
+        SDE 를 돌린 폴더에 생기므로, SDE 와 SDEVICE 를 다른 폴더에서 돌렸다면 꼭 확인할 것
+  - datexcodes.txt 위치: ( ) 실행 폴더 안   ( ) $HOME 에만 있음   ( ) 아직 없음
+
+A-2. 실행 환경
+  ( ) SWB 노드로 실행           -> 출력 파일명의 n@node@ 를 그대로 둔다
+  ( ) 터미널에서 sdevice 직접 실행 -> n@node@ 를 고정 이름으로 바꾼다 (SWB 밖에서는 치환되지 않음)
+
+A-3. 시퀀스 구성 (필요한 것만 남기세요)
+  - PGM : ( ) ISPP  시작 ____ V, 끝 ____ V, 계단 ____ V      (기준값: 15 -> 22 V, 0.5 V, 15계단)
+          ( ) 단일 펄스 ____ V × hold ____ us                (기준값: hold 15 us)
+          ( ) PGM 없음
+  - Erase : ( ) GIDL 소거  SL=BL ____ V, 상승 ____ us, 유지 ____ ms, 방전 ____ us
+                                                             (기준값: 18 V, 100 us, 5 ms, 50 us)
+            ( ) Erase 없음
+  - Read 위치 : ( ) 처음(초기 Vt)  ( ) PGM 계단마다  ( ) PGM 끝난 뒤 한 번  ( ) Erase 뒤
+
+A-4. PGM 뒤 Read 방식 (하나 선택)
+  ( ) 방식 1 — 연속 실행 (권장)
+        PGM -> 바로 read 를 한 런 안에서 이어 계산. 기준 커맨드가 이 방식.
+  ( ) 방식 2 — 저장 후 read
+        PGM 런 끝에 상태를 Save, read 는 별도 런(노드)에서 Load 해서 계산.
+        PGM 한 번으로 read 조건을 여러 개 바꿔 볼 때 쓴다. 반드시 [B-6]의 검증을 할 것.
+  ( ) 방식 3 — 트랩 점유율로 시작 상태를 지정
+        PGM 을 계산하지 않고 Set(Traps(...)) 로 질화막 점유율을 바로 정한 뒤 read / Erase.
+        빠르지만 질화막 전체(Sel·Pass·SG·DG 모두)에 같은 점유율이 들어간다.
+        Tdon = ____ , Tacc = ____  (기준 커맨드의 소거 상태: Tdon 0.139, Tacc 0.0)
+
+A-5. 기타 바꾸고 싶은 것: ______________________________
+
+---------------------------------------------------------------------
+[B] 어시스턴트가 지킬 규칙
+---------------------------------------------------------------------
+
+B-0. 문법 원칙
+  - Sentaurus SDEVICE 문법은 추측하지 않는다. 첨부한 기준 커맨드에 이미 있는 구문을 재사용하고,
+    새 키워드가 필요하면 Sentaurus Device User Guide 의 근거(장·절)를 같이 적는다.
+    근거를 못 찾으면 "매뉴얼에서 확인하지 못했다"고 말한다.
+  - Physics / Traps / Math 섹션은 사용자가 요청하지 않으면 바꾸지 않는다.
+    특히 Traps 의 종류·순서·이름(Tdon, Tacc)은 그대로 둔다 (Load 호환성과 결과 비교 때문).
+  - 결과물은 커맨드 파일 전문 + "기준 커맨드 대비 바뀐 곳" 목록으로 준다.
+
+B-1. 파라미터 파일 경로 — File 섹션의 Parameter 한 줄만 바꾼다
+      File {
+          Grid      = "sde_nand_5wl_alo_msh.tdr"
+          Parameter = "<A-1 의 .par 절대경로>"
+          Plot      = "n@node@_PEv5_des.tdr"
+          Current   = "n@node@_PEv5_des.plt"
+          Output    = "n@node@_PEv5_des.log"
+      }
+  - 경로가 틀리거나 파일이 없으면 Al2O3 라이너(Insulator1)가 정의되지 않아 결과가 달라진다
+    (v3 .par 에 Insulator1 = Al2O3: 유전율 9, 밴드갭 7.0 eV, 전자친화도 1.25 eV 가 들어 있음).
+
+B-2. datexcodes.txt 와 메쉬 파일 위치
+  - datexcodes.txt 는 SDEVICE 를 실행하는 폴더(SWB 프로젝트 폴더)에 둔다.
+    SDEVICE 는 $STROOT_LIB -> $HOME -> 실행 폴더 순으로 읽고, 실행 폴더 것이 가장 우선한다.
+    이 파일이 Si3N4 = Semiconductor, SiO2 = Insulator, PolySi = Semiconductor 분류를 정하며,
+    빠지면 질화막 모델 체크가 달라진다.
+  - SDE 스크립트(.scm)를 실행하면 SDE 를 돌린 폴더에 sde_nand_5wl_alo_msh.tdr 가 생긴다
+    (.scm 마지막 줄 (sde:build-mesh "sde_nand_5wl_alo_msh") 가 이름을 정한다).
+    File 섹션의 Grid = "sde_nand_5wl_alo_msh.tdr" 는 파일명만 적혀 있으므로, 이 파일이 실행 폴더에
+    있어야 한다. 다른 곳에 있으면 실행 폴더로 복사하거나 Grid 에 그 위치의 절대경로를 적는다.
+  - 커맨드를 넘기기 전에 사용자에게 msh.tdr / datexcodes.txt / .par 세 파일의 실제 위치를 확인받는다.
+    셋 중 하나라도 위치가 틀리면 시뮬레이션이 실패하거나, 실패하지 않고 다른 조건으로 계산된다.
+
+B-3. 노드와 바이어스 규칙 (기준 커맨드 그대로)
+  전극: SL, BL, SG, DG, WL_PASS(Pass1·Pass2 묶음), WL_SEL(선택 셀). 게이트 WorkFunction=4.5.
+  | 구간        | WL_SEL               | WL_PASS              | SG = DG          | BL     | SL     |
+  |-------------|----------------------|----------------------|------------------|--------|--------|
+  | PGM 펄스    | V_PGM, 상승 2.5 us /  | 6 V. WL_SEL 과 같은   | 1.9 V            | 0 V    | 0 V    |
+  |             | 유지 15 us / 방전 2.5 us | 기울기로 상승, 같은 시각에 0 V |          |        |        |
+  | PGM 뒤 rest | 0 V (5 us)           | 0 V                  | 0 V              | 0->0.5 V | 0 V  |
+  | Read        | -7 -> 12 V 스윕       | 6 V                  | 6 V              | 0.5 V  | 0 V    |
+  |             | (0.004 V/us, 4750 us) |                      |                  |        |        |
+  | GIDL Erase  | 0 V                  | 0 V                  | max(0, SL - 9 V) | = SL   | 0->18 V|
+  - WL_PASS 를 PGM 동안 DC 로 고정하지 않는다. DC 로 두면 방전 때 WL_SEL 과 Pass 사이 전위차로
+    Pass 셀이 프로그램되는 인공 현상이 생긴다.
+  - PGM 중 SG/DG 는 1.9 V (6 V 아님). SG/DG 도 셀과 같은 전하포획 스택이라 6 V 면 SG/DG 아래 질화막이
+    프로그램될 수 있다. 이 구조의 SG/DG 는 질화막이 비어 있어도 Vt 가 약 -1.8 V 라 1.9 V 로도 채널이 켜진다.
+  - 초기 read(S0)만 1 V/us 빠른 스윕(-7 -> 12 V, 19 us)이고, 나머지 read 는 0.004 V/us 다.
+  - 단일 펄스로 바꿀 때 V_PGM 은 20 V 이하를 권장한다. ISPP 22 V 는 위의 VPASS 동기 파형에서
+    Pass1 트랩이 Sel 대비 1/1000 수준(2e16 vs 4e19 cm^-3)으로 확인된 조건이다.
+    CurrentPlot 의 Pass1/Pass2 eTrappedCharge 로 매번 확인한다.
+  - Erase 를 20 V 이상으로 올리면 게이트 쪽 back-tunneling(NL_Box)이 필요할 수 있다.
+    기준 커맨드에는 NL_Box 가 없다 (18 V × 5 ms 에서는 유무 차이 2 mV).
+
+B-4. 시간축 규칙
+  - Electrode 의 Voltage=( V at t , ... ) 는 PWL 이고 t 는 초 단위다. 구간 사이는 선형 보간.
+  - Solve 의 Transient 들은 InitialTime = 직전 FinalTime 으로 빈틈 없이 이어 붙인다.
+  - 계단/구간을 추가·삭제하면 그 뒤의 모든 전극 PWL 시각과 Transient 시각을 같은 양만큼 민다.
+    전극 6개(SL, BL, SG, DG, WL_PASS, WL_SEL)의 PWL 이 같은 시각 체계를 쓰는지 마지막에 대조한다.
+
+B-5. 방식 1 (연속 실행) — 기준 커맨드 구조
+      Set( Traps( "Tdon" = 0.139  "Tacc" = 0.0  Frozen ) )      # 초기 소거 상태
+      Coupled { Poisson } -> { Poisson Electron } -> { Poisson Electron Hole }
+      Set( Traps( -Frozen ) )
+      Transient ( PGM 구간 ) { ... }                          # 트랩이 움직이는 구간
+      Set( Traps( Frozen ) )
+      Transient ( Read 구간 ) { ... }                         # 트랩을 얼려 read 가 상태를 바꾸지 않게
+      Set( Traps( -Frozen ) )
+      ... (계단 반복) ...
+      Transient ( Erase 상승 / 유지 / 방전 / rest )
+      Set( Traps( Frozen ) )  Transient ( Erase 뒤 Read )  Set( Traps( -Frozen ) )
+  - 트랩을 풀 때는 Set( Traps( -Frozen ) ) 를 쓴다. Unset(TrapFilling) 은 쓰지 않는다
+    (점유율이 평형값으로 다시 계산돼 PGM 으로 넣은 전하가 사라진다).
+  - 트랩이 풀린 상태에서 Transient 밖에 단독 CurrentPlot 을 두지 않는다
+    (실측: 점유율을 정적 평형값으로 바꿨다). 기록은 Transient 안의 CurrentPlot 으로만 한다.
+
+B-6. 방식 2 (저장 후 read) — 사용 시 반드시 지킬 것
+  PGM 런:
+      Transient ( 마지막 PGM 구간, 방전 끝나 전극이 모두 0 V 인 시각까지 ) { ... }
+      Save( FilePrefix="pgmState" )            # Transient 바로 뒤. 사이에 Set / CurrentPlot 등 아무것도 두지 않는다
+  Read 런 (같은 실행 폴더):
+      - Physics / Traps / Math 는 PGM 런과 완전히 같게 (트랩 종류·순서 동일)
+      - Electrode PWL 은 0 초부터 read 파형으로 새로 쓴다 (첫 점은 0 V)
+      Solve {
+          Load( FilePrefix="pgmState" )
+          Set( Traps( Frozen ) )
+          Transient ( InitialTime=0 FinalTime=<read 길이> ... ) { Coupled { Poisson Electron Hole } CurrentPlot(...) }
+      }
+  - Load 는 Solve 의 최상위에서만 쓸 수 있고, 저장 파일의 전극 전압이 커맨드의 바이어스를 덮어쓴다
+    (Sentaurus Device User Guide, "Save and Load Statements").
+  - 여러 노드에서 같은 PGM 상태를 읽을 때는 n@node|-1@ 같은 상대 참조 대신 고정 이름("pgmState")을 쓴다.
+    SWB 트리가 의도와 다르게 붙으면 상대 참조가 엉뚱한 노드를 가리킨다.
+  - [필수 검증] Load 가 실패해도 SDEVICE 는 멈추지 않고 빈 상태로 계속 돈다. 그리고 이 구조에서
+    PGM 직후의 비평형 트랩 점유율이 Load 로 복원되지 않은 실측이 있다
+    (Pass1 eTrappedCharge 1.65e16 -> Load 직후 3.70e19 cm^-3; 매뉴얼은 .sav 가 트랩 점유율을
+    저장한다고 하지만 원인은 미규명). 따라서 매번:
+      1) Read 런의 .err 에 "not loaded" 가 없는지 확인
+      2) Read 런 .plt 첫 행의 Sel / Pass1 eTrappedCharge 를 PGM 런 마지막 Transient .plt 의 마지막 행과 비교
+      3) 다르면 방식 2 결과는 쓰지 말고 방식 1 로 돌린다.
+
+B-7. 방식 3 (점유율로 시작 상태 지정)
+  - 기준 커맨드의 첫 줄  Set( Traps( "Tdon" = 0.139  "Tacc" = 0.0  Frozen ) )  의 숫자만 바꾼다.
+    값은 트랩 준위의 점유 비율(0~1)이다. 0.139 / 0.0 이 이 구조의 소거 상태(초기 Vt 약 -4.0 V)다.
+  - 질화막 전체에 같은 값이 들어간다(선택 셀만 프로그램된 상태가 아님)는 점을 결과 해석에 적는다.
+
+B-8. 정상 동작 확인값 (기준 커맨드 그대로 돌렸을 때)
+  - 초기 Vt -4.00 V,  ISPP 15계단 후 +5.60 V,  GIDL 소거(18 V × 5 ms) 후 -4.82 V
+  - Vt 는 read 구간 .plt 의 BL 전류 대 WL_SEL 전압에서 뽑는다. 기준 전류는 사용자 기준에 맞춘다.
+  - 계산 시간: 기준 커맨드 한 런 약 3시간 20분 (4 스레드, 참고값).
+
+B-9. 넘겨줄 때 같이 말할 것
+  - 실행 폴더에 datexcodes.txt, sde_nand_5wl_alo_msh.tdr, 커맨드 파일이 다 있는지
+    (msh.tdr 가 다른 곳에 있으면 Grid 경로를 그 위치로 바꿨는지)
+  - Parameter 경로를 A-1 값으로 바꿨는지
+  - 방식 2 를 골랐다면 B-6 검증 3단계
